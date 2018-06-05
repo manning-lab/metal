@@ -10,7 +10,7 @@ RUN cd /bin
 RUN wget -O http://csg.sph.umich.edu/abecasis/Metal/download/generic-metal-2011-03-25.tar.gz
 RUN tar -xzf ./generic-metal-2011-03-25.tar.gz && rm generic-metal-2011-03-25.tar.gz && cd generic-metal && make all && mv executables/metal /bin && cd /
 
-RUN echo 'install.packages(c("data.table","qqman"),repos="http://cran.us.r-project.org")' > install.R && \
+RUN echo 'install.packages(c("qqman","data.table","tools","RColorBrewer"),repos="http://cran.us.r-project.org")' > install.R && \
 	Rscript --vanilla install.R && \
 	rm install.R
 	

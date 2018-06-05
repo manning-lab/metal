@@ -15,50 +15,53 @@
 # csv : a comma separated file of results including METAL results and "cols_tokeep" from each input results file (.csv)
 # plots : quantile-quantile and manhattan plots subset by MAF (all, <5%, >=5%) for meta-analysis p-values (.png)
 
-# Check if required packages are installed (sourced from https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them)
-packages <- c("qqman","data.table")
-to_install <- packages[!(packages %in% installed.packages()[,"Package"])]
-if(length(to_install)) install.packages(to_install,repos='http://cran.us.r-project.org')
-
 # Load packages
-lapply(packages, library, character.only = TRUE)
+lapply(c("qqman","data.table","tools","RColorBrewer"), library, character.only = TRUE)
 
 # Parse inputs
 input_args <- commandArgs(trailingOnly=T)
 marker.column <- input_args[1]
-freq.column <- input_args[2]
 pval.column <- input_args[3]
 sample.column <- input_args[4]
-cols.tokeep <- unlist(strsplit(input_args[5],","))
-assoc.names <- unlist(strsplit(input_args[6],","))
 out.pref <- input_args[7]
 metal.file <- input_args[8]
 assoc.files <- unlist(strsplit(input_args[9],","))
 
-# if you provide less names than the number of assoc files, use arbitrary names
-if (length(assoc.names) < length(assoc.files)){
-  assoc.names = as.character(seq(1,length(assoc.files)))
-}
+######### test inputs #################
+# marker.column <- "snpID"
+# pval.column <- "Score.pval"
+# sample.column <- "n"
+# out.pref <- "demo"
+# metal.file <- "demo1.tsv"
+# assoc.files <- c("demo.1.assoc.csv","demo.2.assoc.csv")
+######################################
+
+# define names for each input analysis
+assoc.names <- unlist(lapply(assoc.files, function(x) file_path_sans_ext(basename(x)) ))
 
 # load metal results
 metal.data <- fread(metal.file,data.table=F)
 
-for (f in seq(1,length(assoc.files))) {
-  assoc.data <- fread(assoc.files[f],data.table=F)[,c(marker.column, cols.tokeep, freq.column, pval.column, sample.column)]
-  if (f == 1){
-    assoc.data.all = assoc.data[,c(marker.column, cols.tokeep, freq.column, pval.column, sample.column)]
-    colnames(assoc.data.all)[which(colnames(assoc.data.all) %in% c(freq.column, pval.column, sample.column))] <- paste(c(freq.column, pval.column, sample.column),assoc.names[f],sep=".")
-  } else {
-    names(assoc.data)[names(assoc.data) %in% c(freq.column, pval.column, sample.column)] <- paste(names(assoc.data)[names(assoc.data) %in% c(freq.column, pval.column, sample.column)],".",assoc.names[f],sep = "")
-    assoc.data.all <- merge(assoc.data.all, assoc.data, by=c(marker.column,cols.tokeep),all=T)
-  }
+# names to keep later on
+names.to.keep <- names(metal.data)
+
+# load individual results and merge
+for (f in seq(1,length(assoc.files))){
+  assoc.data <- fread(assoc.files[f],data.table=F)
+  names(assoc.data)[names(assoc.data) != marker.column] = paste(names(assoc.data)[names(assoc.data) != marker.column], assoc.names[f], sep = ".")
+  metal.data <- merge(metal.data, assoc.data, by.x = "MarkerName", by.y = marker.column)
 }
 
-metal.data <- merge(metal.data,assoc.data.all,by.x=c("MarkerName"), by.y=marker.column,all.x=T)
+# get the position and chromosome columns for manhatten
+metal.data$pos <- unlist(apply(metal.data[,names(metal.data)[startsWith(names(metal.data), "pos")]], 1, function(x) unique(x[!is.na(x)])[1]))
+metal.data$chr <- unlist(apply(metal.data[,names(metal.data)[startsWith(names(metal.data), "chr")]], 1, function(x) unique(x[!is.na(x)])[1]))
 
+# remove unneeded columns
+names.to.keep <- c(names.to.keep, "pos", "chr", names(metal.data)[startsWith(names(metal.data),"n.")], names(metal.data)[startsWith(names(metal.data),"MAF")], names(metal.data)[startsWith(names(metal.data),pval.column)])
+metal.data <- metal.data[,names(metal.data)[names(metal.data) %in% names.to.keep]]
 
 # order based on meta pvalue
-metal.data = metal.data[order(metal.data[,"P-value"]),]
+metal.data <- metal.data[order(metal.data[,"P-value"]),]
 
 # calculate full sample mac for each variant
 all_mac <- c()
@@ -67,18 +70,48 @@ for (n in assoc.names){
 }
 metal.data$total_maf <- rowSums(all_mac)/(2*metal.data$Weight)
 
-# subset back to only the cols we want
-cols_to_save <- colnames(metal.data)[! (colnames(metal.data) %in% sub("$", paste("_", sample.column, sep=""), assoc.names))]
-
 # write results out to file
-fwrite(metal.data[,cols_to_save], file = paste(out.pref,"_all.csv",sep=""), sep=",")
+fwrite(metal.data, file = paste(out.pref,"_all.csv",sep=""), sep=",")
 
-png(filename = paste(out.pref,"_all_plots.png",sep=""),width = 11, height = 11, units = "in", res=400, type = "cairo")
-par(mfrow=c(3,3))
-qq(metal.data[,"P-value"],main="All variants")
-qq(metal.data[metal.data$total_maf>0.05,"P-value"],main="Variants with MAF>0.05")
-qq(metal.data[metal.data$total_maf<=0.05,"P-value"],main="Variants with MAF<=0.05")
+## Plotting ##
+
+# calculate genomic control 
+lam = function(x,p=.5){
+  x = x[!is.na(x)]
+  chisq <- qchisq(1-x,1)
+  round((quantile(chisq,p)/qchisq(p,1)),2)
+}
+
+# qq plot
+qqpval2 = function(x, main="", col="black"){
+  x<-sort(-log(x[x>0],10))
+  n<-length(x)
+  plot(x=qexp(ppoints(n))/log(10), y=x, xlab="Expected", ylab="Observed", main=main ,col=col ,cex=.8, bg= col, pch = 21)
+  abline(0,1, lty=2)
+}
+
+# qq without identity line
+qqpvalOL = function(x, col="blue"){
+  x<-sort(-log(x[x>0],10))
+  n<-length(x)
+  points(x=qexp(ppoints(n))/log(10), y=x, col=col, cex=.8, bg = col, pch = 21)
+}
+
+# get the right colors
+cols <- brewer.pal(8,"Dark2")
+
+# qq plot
+png(filename = paste(out.pref,"_all_plots.png",sep=""),width = 11, height = 11, units = "in", res=400)#, type = "cairo")
+layout(matrix(c(1,2,3,3),nrow=2,byrow = T))
+
+qqpval2(metal.data[,"P-value"], col=cols[8])
+legend('topleft',c(paste0('GC = ',lam(metal.data[,"P-value"]))),col=c(cols[8]),pch=c(21))
+
+qqpval2(metal.data[metal.data$total_maf >= 0.05, "P-value"],col=cols[1])
+qqpvalOL(metal.data[metal.data$total_maf < 0.05, "P-value"],col=cols[2])
+legend('topleft',c(paste0('GC (MAF >= 5%) = ',lam(metal.data[metal.data$total_maf >= 0.05, "P-value"])),
+                   paste0('GC (MAF < 5%) = ',lam(metal.data[metal.data$total_maf < 0.05, "P-value"]))),
+                   col=c(cols[1],cols[2]),pch=c(21,21))
 manhattan(metal.data,chr="chr",bp="pos",p="P-value", main="All variants")
-manhattan(metal.data[metal.data$total_maf>0.05,],chr="chr",bp="pos",p="P-value", main="Variants with MAF>0.05")
-manhattan(metal.data[metal.data$total_maf<=0.05,],chr="chr",bp="pos",p="P-value", main="Variants with MAF<=0.05")
+
 dev.off()

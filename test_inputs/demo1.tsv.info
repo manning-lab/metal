@@ -1,0 +1,15 @@
+# This file contains a short description of the columns in the
+# meta-analysis summary file, named 'demo1.tsv'
+
+# Marker    - this is the marker name
+# Allele1   - the first allele for this marker in the first file where it occurs
+# Allele2   - the second allele for this marker in the first file where it occurs
+# Weight    - the sum of the individual study weights (typically, N) for this marker
+# Z-score   - the combined z-statistic for this marker
+# P-value   - meta-analysis p-value
+# Direction - summary of effect direction for each study, with one '+' or '-' per study
+
+# Input for this meta-analysis was stored in the files:
+# --> Input File 1 : demo.1.assoc.csv
+# --> Input File 2 : demo.2.assoc.csv
+

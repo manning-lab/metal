@@ -1,0 +1,87 @@
+MetaAnalysis Helper - (c) 2007 - 2009 Goncalo Abecasis
+This version released on 2011-03-25
+
+# This program faciliates meta-analysis of genome-wide association studies.
+# Commonly used commands are listed below:
+#
+# Options for describing input files ...
+#   SEPARATOR        [WHITESPACE|COMMA|BOTH|TAB] (default = WHITESPACE)
+#   COLUMNCOUNTING   [STRICT|LENIENT]            (default = 'STRICT')
+#   MARKERLABEL      [LABEL]                     (default = 'MARKER')
+#   ALLELELABELS     [LABEL1 LABEL2]             (default = 'ALLELE1','ALLELE2')
+#   EFFECTLABEL      [LABEL|log(LABEL)]          (default = 'EFFECT')
+#   FLIP
+#
+# Options for filtering input files ...
+#   ADDFILTER        [LABEL CONDITION VALUE]     (example = ADDFILTER N > 10)
+#                    (available conditions are <, >, <=, >=, =, !=, IN)
+#   REMOVEFILTERS
+#
+# Options for sample size weighted meta-analysis ...
+#   WEIGHTLABEL      [LABEL]                     (default = 'N')
+#   PVALUELABEL      [LABEL]                     (default = 'PVALUE')
+#   DEFAULTWEIGHT    [NUMBER]                    (default = 1.0)
+#   MINWEIGHT        [NUMBER]                    (default = 1.0)
+#
+# Options for inverse variance weighted meta-analysis ...
+#   STDERRLABEL      [LABEL]                     (default = 'STDERR')
+#   SCHEME           [SAMPLESIZE|STDERR]         (default = SAMPLESIZE)
+#
+# Options to enable tracking of allele frequencies ...
+#   AVERAGEFREQ      [ON|OFF]                    (default = OFF)
+#   MINMAXFREQ       [ON|OFF]                    (default = OFF)
+#   FREQLABEL        [LABEL]                     (default = 'FREQ')
+#
+# Options to enable tracking of user defined variables ...
+#   CUSTOMVARIABLE   [VARNAME]
+#   LABEL            [VARNAME] AS [HEADER]
+#
+# Options to enable explicit strand information ...
+#   USESTRAND        [ON|OFF]                    (default = OFF)
+#   STRANDLABEL      [LABEL]                     (default = 'STRAND')
+#
+# Automatic genomic control correction of input statistics ...
+#   GENOMICCONTROL   [ON|OFF|VALUE|LIST snps.txt](default = OFF)
+#
+# Options for general analysis control ...
+#   PROCESSFILE      [FILENAME]
+#   OUTFILE          [PREFIX SUFFIX]             (default = 'METAANALYSIS','.TBL')
+#   MAXWARNINGS      [NUMBER]                    (default = 20)
+#   VERBOSE          [ON|OFF]                    (default = 'OFF')
+#   LOGPVALUE        [ON|OFF]                    (default = 'OFF')
+#   ANALYZE          [HETEROGENEITY]
+#   CLEAR
+
+# Options for general run control ...
+#   SOURCE           [SCRIPTFILE]
+#   RETURN
+#   QUIT
+
+# Processing commands in script.txt ...
+## Set marker header to snpID ...
+## Set weight header to n ...
+## Set allele headers to alt and ref ...
+## Set frequency header to MAF ...
+## If you want frequencies to be averaged, issue the 'AVERAGEFREQ ON' command
+## Set p-value header to Score.pval ...
+## Set effect header to Score.Stat ...
+## Set column separator to COMMAS ...
+## LENIENT MODE: Input lines can include extra columns, which will be ignored
+###########################################################################
+## Processing file 'demo.1.assoc.csv'
+## Processed 654 markers ...
+
+###########################################################################
+## Processing file 'demo.2.assoc.csv'
+## Processed 654 markers ...
+
+## Set output file prefix and suffix to demo and .tsv ...
+###########################################################################
+## Executing meta-analysis ...
+## Complete results will be stored in file 'demo1.tsv'
+## Column descriptions will be stored in file 'demo1.tsv.info'
+## Completed meta-analysis for 654 markers!
+## Smallest p-value is 0.0001262 at marker '445'
+
+## Clearing all stored statistics ...
+# Clearing user defined filters ...
