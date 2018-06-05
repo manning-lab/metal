@@ -39,37 +39,34 @@ This workflow is produced and maintained by the [Manning Lab](https://manning-la
 This function generates the metal input script, processes each input results file, and runs the meta analysis
 
 Inputs:
-* result_files : an array of association results files, like those generated in the single variant association pipeline (Array[File], .csv or .tsv)
-* marker_column : column name in results_files with variant identifiers (string)
-* weight_column : column name in results_files for weighting of variants (string)
-* allele_effect_column : column name in results_files with effect allele (string)
-* allele_non_effect_column : column name in results_files with non effect allele (string)
-* freq_column : column in results_files with variant frequency (string)
-* pval_column : column in results_files with variant p-value (string)
-* effect_column : column in results_files with variant effect (string)
+* assoc_files : an array of association results files, like those generated in the single variant association pipeline, must have a column labeled "MAF" (Array[File], .csv or .tsv)
+* marker_column : column name in assoc_files with variant identifiers (string, default = snpID)
+* sample_column : column name in assoc_files for weighting of variants (string, default = n)
+* allele_effect_column : column name in assoc_files with effect allele (string, default = alt)
+* allele_non_effect_column : column name in assoc_files with non effect allele (string, default = ref)
+* pval_column : column in assoc_files with variant p-value (string, default = Score.pval)
+* effect_column : column in assoc_files with variant effect (string, default = Score.Stat)
 * out_pref : prefix for output filename (string)
-* separator : character that separates each input result file (default: COMMA; WHITESPACE, TAB)
-* analyze_arg : optional argument for other types of analyses (default: ZSCORE)
+* separator : character that separates each input result file (string, default = COMMA [WHITESPACE, TAB])
+* analyze_arg : optional argument for other types of analyses (string, default = ZSCORE)
 
 Outputs:
 * result_file : results per variant for all variants tested (.TBL)
 * metal_script : script that was generated as input to METAL (script.txt)
 * log_file : log file capturing standard error of running METAL (.log)
+* info_file : description of results_file columns, input files
 
 ### metalSummary
 
 This function generates the metal input script, processes each input results file, and runs the meta analysis
 
 Inputs:
-* marker_column : column name in results_files with variant identifiers (string)
-* freq_column : column in results_files with variant frequency (string)
-* pval_column : column in results_files with variant p-value (string)
-* sample_column : column in results_files with number of samples (string)
-* cols_tokeep : comma separated list of columns in each association results file (string)
-* assoc_names : comma separated list of association analysis names, one corresponding to each input result file (string)
+* marker_column : column name in assoc_files with variant identifiers (string, default = snpID)
+* pval_column : column in assoc_files with variant p-value (string, default = Score.pval)
+* sample_column : column in assoc_files with number of samples (string, default = n)
 * out_pref : prefix for output filename (string)
 * metal_file : output of runMetal task (File)
-* result_files : an array of association results files, like those generated in the 
+* assoc_files : an array of association results files, like those generated in the 
 
 Outputs:
 * csv : a comma separated file of results including METAL results and "cols_tokeep" from each input results file (.csv)

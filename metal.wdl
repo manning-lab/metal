@@ -1,30 +1,4 @@
-task metalSummary {
-	String? marker_column 
-	String? pval_column 
-	String? sample_column
-	String? out_pref
-	File metal_file
-	Array[File] assoc_files
-
-	Int disk
-	Int memory
-	
-	command {
-		R --vanilla --args ${default="snpID" marker_column} ${default="Score.pval" pval_column} ${default="n" sample_column} ${default="metal" out_pref} ${metal_file} ${sep="," assoc_files} < /metal/metal_summary.R
-	}
-
-	runtime {
-		docker: "tmajarian/metal:0.1"
-		disks: "local-disk ${disk} SSD"
-		memory: "${memory}G"
-	}
-
-	output {
-		File csv = "${out_pref}_all.csv"
-		File plots = "${out_pref}_all_plots.png"
-	}
-}
-
+# Main task for meta analysis
 task runMetal {
 	Array[File] assoc_files
 	String? marker_column
@@ -33,7 +7,7 @@ task runMetal {
 	String? allele_non_effect_column
 	String? pval_column
 	String? effect_column
-	String? out_pref
+	String out_pref
 	String? separator
 	String? analyze_arg
 
@@ -53,7 +27,7 @@ task runMetal {
 		echo "PROCESS ${sep = '\nPROCESS ' assoc_files}" >> script.txt
 		echo "OUTFILE ${default='metal' out_pref} .tsv" >> script.txt
 		echo "ANALYZE ${default='' analyze_arg}" >> script.txt
-		metal script.txt > "${default='metal' out_pref}.log"
+		metal script.txt > "${out_pref}.log"
 	}
 
 	runtime {
@@ -63,13 +37,42 @@ task runMetal {
 	}
 
 	output {
-		File result_file = "${default='metal' out_pref}1.tsv"
+		File result_file = "${out_pref}1.tsv"
 		File metal_script = "script.txt"
-		File log_file = "${default='metal' out_pref}.log"
-		File info_file = "${default='metal' out_pref}1.tsv.info"
+		File log_file = "${out_pref}.log"
+		File info_file = "${out_pref}1.tsv.info"
 	}
 }
 
+# Summarization of meta analysis results
+task metalSummary {
+	String? marker_column 
+	String? pval_column 
+	String? sample_column
+	String out_pref
+	File metal_file
+	Array[File] assoc_files
+
+	Int disk
+	Int memory
+	
+	command {
+		R --vanilla --args ${default="snpID" marker_column} ${default="Score.pval" pval_column} ${default="n" sample_column} ${out_pref} ${metal_file} ${sep="," assoc_files} < /metal/metal_summary.R
+	}
+
+	runtime {
+		docker: "tmajarian/metal:0.1"
+		disks: "local-disk ${disk} SSD"
+		memory: "${memory}G"
+	}
+
+	output {
+		File csv = "${out_pref}_all.csv"
+		File plots = "${out_pref}_all_plots.png"
+	}
+}
+
+# Workflow to run meta analysis and summary
 workflow w_metal {
 	# inputs
 	Array[File] these_assoc_files
@@ -79,7 +82,7 @@ workflow w_metal {
 	String? this_allele_non_effect_column
 	String? this_pval_column
 	String? this_effect_column
-	String? this_out_pref
+	String this_out_pref
 	String? this_separator
 	String? this_analyze_arg
 
