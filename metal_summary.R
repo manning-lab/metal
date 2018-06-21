@@ -21,11 +21,11 @@ lapply(c("qqman","data.table","tools","RColorBrewer"), library, character.only =
 # Parse inputs
 input_args <- commandArgs(trailingOnly=T)
 marker.column <- input_args[1]
-pval.column <- input_args[3]
-sample.column <- input_args[4]
-out.pref <- input_args[7]
-metal.file <- input_args[8]
-assoc.files <- unlist(strsplit(input_args[9],","))
+pval.column <- input_args[2]
+sample.column <- input_args[3]
+out.pref <- input_args[4]
+metal.file <- input_args[5]
+assoc.files <- unlist(strsplit(input_args[6],","))
 
 ######### test inputs #################
 # marker.column <- "snpID"
