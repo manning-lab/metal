@@ -27,6 +27,8 @@ out.pref <- input_args[4]
 metal.file <- input_args[5]
 assoc.files <- unlist(strsplit(input_args[6],","))
 
+freq.column <- "MAF"
+
 ######### test inputs #################
 # marker.column <- "snpID"
 # pval.column <- "Score.pval"
