@@ -67,7 +67,7 @@ task metalSummary {
 	}
 
 	output {
-		File csv = "${out_pref}__METAL_p.lt.0.001.csv"
+		File csv = "${out_pref}_METAL_p.lt.0.001.csv"
 		File plots = "${out_pref}_all_plots.png"
 	}
 }
