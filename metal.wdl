@@ -57,7 +57,7 @@ task metalSummary {
 	Int memory
 	
 	command {
-		R --vanilla --args ${default="snpID" marker_column} ${default="Score.pval" pval_column} ${default="n" sample_column} ${out_pref} ${metal_file} ${sep="," assoc_files} < /metal/metal_summary.R
+		R --vanilla --args ${default="MarkerName" marker_column} ${default="Score.pval" pval_column} ${default="n" sample_column} ${out_pref} ${metal_file} ${sep="," assoc_files} < /metal/metal_summary.R
 	}
 
 	runtime {
