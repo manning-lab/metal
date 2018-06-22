@@ -31,7 +31,7 @@ task runMetal {
 	}
 
 	runtime {
-		docker: "tmajarian/metal:0.1"
+		docker: "manninglab/metal:latest"
 		disks: "local-disk ${disk} SSD"
 		memory: "${memory}G"
 	}
@@ -61,13 +61,13 @@ task metalSummary {
 	}
 
 	runtime {
-		docker: "tmajarian/metal:0.1"
+		docker: "manninglab/metal:latest"
 		disks: "local-disk ${disk} SSD"
 		memory: "${memory}G"
 	}
 
 	output {
-		File csv = "${out_pref}_all.csv"
+		File csv = "${out_pref}__METAL_p.lt.0.001.csv"
 		File plots = "${out_pref}_all_plots.png"
 	}
 }
