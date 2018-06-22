@@ -73,7 +73,7 @@ for (n in assoc.names){
 metal.data$total_maf <- rowSums(all_mac)/(2*metal.data$Weight)
 
 # write results out to file
-fwrite(metal.data, file = paste(out.pref,"_all.csv",sep=""), sep=",")
+fwrite(metal.data[which(metal.data[,"P-value"]<0.001),], file = paste(out.pref,"_METAL_p.lt.0.001.csv",sep=""), sep=",")
 
 ## Plotting ##
 
