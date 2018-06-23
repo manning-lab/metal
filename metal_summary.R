@@ -51,7 +51,7 @@ names.to.keep <- names(metal.data)
 for (f in seq(1,length(assoc.files))){
   assoc.data <- fread(assoc.files[f],data.table=F)
   names(assoc.data)[names(assoc.data) != marker.column] = paste(names(assoc.data)[names(assoc.data) != marker.column], assoc.names[f], sep = ".")
-  metal.data <- merge(metal.data, assoc.data, by.x = "MarkerName", by.y = marker.column)
+  metal.data <- merge(metal.data, assoc.data, by.x = "MarkerName", by.y = marker.column, all.x=TRUE)
 }
 
 # get the position and chromosome columns for manhatten
