@@ -52,12 +52,13 @@ task metalSummary {
 	String out_pref
 	File metal_file
 	Array[File] assoc_files
+	Float? pval_thresh
 
 	Int disk
 	Int memory
 	
 	command {
-		R --vanilla --args ${default="MarkerName" marker_column} ${default="Score.pval" pval_column} ${default="n" sample_column} ${out_pref} ${metal_file} ${sep="," assoc_files} < /metal/metal_summary.R
+		R --vanilla --args ${default="MarkerName" marker_column} ${default="Score.pval" pval_column} ${default="n" sample_column} ${out_pref} ${metal_file} ${sep="," assoc_files} ${default="0.0001" pval_thresh} < /metal/metal_summary.R
 	}
 
 	runtime {
@@ -67,8 +68,9 @@ task metalSummary {
 	}
 
 	output {
-		File csv = "${out_pref}_METAL_p.lt.0.001.csv"
-		File plots = "${out_pref}_all_plots.png"
+		File csv = "${out_pref}.METAL.assoc.csv"
+		File top_csv = "${out_pref}.METAL.top.assoc.csv"
+		File plots = "${out_pref}.plots.png"
 	}
 }
 
@@ -85,6 +87,7 @@ workflow w_metal {
 	String this_out_pref
 	String? this_separator
 	String? this_analyze_arg
+	String? this_pval_thresh
 
 	# other inputs
 	Int this_memory
@@ -96,6 +99,6 @@ workflow w_metal {
 	}
 
 	call metalSummary {
-		input: marker_column = this_marker_column, pval_column = this_pval_column, sample_column = this_sample_column, out_pref = this_out_pref, metal_file = runMetal.result_file, assoc_files = these_assoc_files, disk = this_disk, memory = this_memory
+		input: marker_column = this_marker_column, pval_column = this_pval_column, sample_column = this_sample_column, out_pref = this_out_pref, metal_file = runMetal.result_file, assoc_files = these_assoc_files, pval_thresh = this_pval_thresh, disk = this_disk, memory = this_memory
 	}
 }

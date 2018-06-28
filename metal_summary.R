@@ -26,6 +26,7 @@ sample.column <- input_args[3]
 out.pref <- input_args[4]
 metal.file <- input_args[5]
 assoc.files <- unlist(strsplit(input_args[6],","))
+pval.thresh <- as.numeric(input_args[7])
 
 freq.column <- "MAF"
 
@@ -72,8 +73,12 @@ for (n in assoc.names){
 }
 metal.data$total_maf <- rowSums(all_mac)/(2*metal.data$Weight)
 
+# change marker sep
+metal.data$MarkerName <- gsub("-",":",meta.data$MarkerName)
+
 # write results out to file
-fwrite(metal.data[which(metal.data[,"P-value"]<0.001),], file = paste(out.pref,"_METAL_p.lt.0.001.csv",sep=""), sep=",")
+fwrite(metal.data[which(metal.data[,"P-value"] < pval.thresh),], file = paste0(out.pref,".METAL.top.assoc.csv"), sep=",")
+fwrite(metal.data, file = paste0(out.pref,".METAL.assoc.csv"), sep=",")
 
 ## Plotting ##
 
@@ -103,7 +108,7 @@ qqpvalOL = function(x, col="blue"){
 cols <- brewer.pal(8,"Dark2")
 
 # qq plot
-png(filename = paste(out.pref,"_all_plots.png",sep=""),width = 11, height = 11, units = "in", res=400)#, type = "cairo")
+png(filename = paste0(out.pref,".plots.png"),width = 11, height = 11, units = "in", res=400)#, type = "cairo")
 layout(matrix(c(1,2,3,3),nrow=2,byrow = T))
 
 qqpval2(metal.data[,"P-value"], col=cols[8])
