@@ -74,7 +74,7 @@ for (n in assoc.names){
 metal.data$total_maf <- rowSums(all_mac)/(2*metal.data$Weight)
 
 # change marker sep
-metal.data$MarkerName <- gsub("-",":",meta.data$MarkerName)
+metal.data$MarkerName <- gsub("-",":",metal.data$MarkerName)
 
 # write results out to file
 fwrite(metal.data[which(metal.data[,"P-value"] < pval.thresh),], file = paste0(out.pref,".METAL.top.assoc.csv"), sep=",")
