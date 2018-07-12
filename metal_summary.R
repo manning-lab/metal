@@ -37,7 +37,8 @@ freq.column <- "MAF"
 # out.pref <- "demo"
 # metal.file <- "demo1.tsv"
 # assoc.files <- c("demo.1.assoc.csv","demo.2.assoc.csv")
-######################################
+# pval.thresh <- 0.05
+#####################################
 
 # define names for each input analysis
 assoc.names <- unlist(lapply(assoc.files, function(x) file_path_sans_ext(basename(x)) ))
