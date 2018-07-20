@@ -26,7 +26,7 @@ workflow w_summaryCSVMetal {
 	# inputs
 	File metal_file
 	String this_out_pref
-	String? this_pval_thresh
+	Float? this_pval_thresh
 
 	# other inputs
 	Int this_memory
