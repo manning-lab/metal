@@ -61,25 +61,21 @@ metal.data$pos <- unlist(apply(metal.data[,names(metal.data)[startsWith(names(me
 metal.data$chr <- unlist(apply(metal.data[,names(metal.data)[startsWith(names(metal.data), "chr")]], 1, function(x) unique(x[!is.na(x)])[1]))
 
 # remove unneeded columns
-names.to.keep <- c(names.to.keep, "pos", "chr", names(metal.data)[startsWith(names(metal.data),"n.")], names(metal.data)[startsWith(names(metal.data),"MAF")], names(metal.data)[startsWith(names(metal.data),pval.column)])
+names.to.keep <- c(names.to.keep, "pos", "chr", names(metal.data)[startsWith(names(metal.data),pval.column)], names(metal.data)[startsWith(names(metal.data),"minor.allele")])
 metal.data <- metal.data[,names(metal.data)[names(metal.data) %in% names.to.keep]]
 
 # order based on meta pvalue
 metal.data <- metal.data[order(metal.data[,"P-value"]),]
 
 # calculate full sample mac for each variant
-all_mac <- c()
-for (n in assoc.names){
-  all_mac <- cbind(all_mac, 2 * metal.data[,paste(sample.column,".",n,sep="")] * metal.data[,paste(freq.column,".",n,sep="")] )
-}
-metal.data$total_maf <- rowSums(all_mac)/(2*metal.data$Weight)
+# all_mac <- c()
+# for (n in assoc.names){
+#   all_mac <- cbind(all_mac, 2 * metal.data[,paste(sample.column,".",n,sep="")] * metal.data[,paste(freq.column,".",n,sep="")] )
+# }
+# metal.data$total_maf <- rowSums(all_mac)/(2*metal.data$Weight)
 
 # change marker sep
-metal.data$MarkerName <- gsub("-",":",metal.data$MarkerName)
-
-# write results out to file
-fwrite(metal.data[which(metal.data[,"P-value"] < pval.thresh),], file = paste0(out.pref,".METAL.top.assoc.csv"), sep=",")
-fwrite(metal.data, file = paste0(out.pref,".METAL.assoc.csv"), sep=",")
+# metal.data$MarkerName <- gsub("-",":",metal.data$MarkerName)
 
 ## Plotting ##
 
@@ -115,11 +111,17 @@ layout(matrix(c(1,2,3,3),nrow=2,byrow = T))
 qqpval2(metal.data[,"P-value"], col=cols[8])
 legend('topleft',c(paste0('GC = ',lam(metal.data[,"P-value"]))),col=c(cols[8]),pch=c(21))
 
-qqpval2(metal.data[metal.data$total_maf >= 0.05, "P-value"],col=cols[1])
-qqpvalOL(metal.data[metal.data$total_maf < 0.05, "P-value"],col=cols[2])
-legend('topleft',c(paste0('GC (MAF >= 5%) = ',lam(metal.data[metal.data$total_maf >= 0.05, "P-value"])),
-                   paste0('GC (MAF < 5%) = ',lam(metal.data[metal.data$total_maf < 0.05, "P-value"]))),
+qqpval2(metal.data[metal.data$Freq1 >= 0.05, "P-value"],col=cols[1])
+qqpvalOL(metal.data[metal.data$Freq1 < 0.05, "P-value"],col=cols[2])
+legend('topleft',c(paste0('GC (MAF >= 5%) = ',lam(metal.data[metal.data$Freq1 >= 0.05, "P-value"])),
+                   paste0('GC (MAF < 5%) = ',lam(metal.data[metal.data$Freq1 < 0.05, "P-value"]))),
                    col=c(cols[1],cols[2]),pch=c(21,21))
 manhattan(metal.data,chr="chr",bp="pos",p="P-value", main="All variants")
 
 dev.off()
+
+# write results out to file
+metal.data <- metal.data[,c("MarkerName", "chr", "pos", "Allele1", "Allele2", names(metal.data)[startsWith(names(metal.data),"minor.allele")][1], "Freq1", "P-value", "Weight", "Zscore",  "Direction")]
+names(metal.data) <- c("MarkerName", "chr", "pos","allele1", "allele2", "minor.allele", "maf", "pvalue", "weight", "zscore","direction")
+fwrite(metal.data[which(metal.data[,"pvalue"] < pval.thresh),], file = paste0(out.pref,".METAL.top.assoc.csv"), sep=",")
+fwrite(metal.data, file = paste0(out.pref,".METAL.assoc.csv"), sep=",")

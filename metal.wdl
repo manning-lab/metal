@@ -16,10 +16,11 @@ task runMetal {
 
 	command {
 		echo "# this is your metal input file" > script.txt
-		echo "MARKER ${default='snpID' marker_column}" >> script.txt
+		echo "MARKER ${default='MarkerName' marker_column}" >> script.txt
 		echo "WEIGHT ${default='n' sample_column}" >> script.txt
 		echo "ALLELE ${default='alt' allele_effect_column} ${default='ref' allele_non_effect_column}" >> script.txt
 		echo "FREQ MAF" >> script.txt
+		echo "AVERAGEFREQ ON" >> script.txt
 		echo "PVAL ${default='Score.pval' pval_column}" >> script.txt
 		echo "EFFECT ${default='Score.Stat' effect_column}" >> script.txt
 		echo "SEPARATOR ${default= 'COMMA' separator}" >> script.txt
