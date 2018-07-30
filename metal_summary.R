@@ -121,7 +121,8 @@ manhattan(metal.data,chr="chr",bp="pos",p="P-value", main="All variants")
 dev.off()
 
 # write results out to file
-metal.data <- metal.data[,c("MarkerName", "chr", "pos", "Allele1", "Allele2", names(metal.data)[startsWith(names(metal.data),"minor.allele")][1], "Freq1", "P-value", "Weight", "Zscore",  "Direction")]
-names(metal.data) <- c("MarkerName", "chr", "pos","allele1", "allele2", "minor.allele", "maf", "pvalue", "weight", "zscore","direction")
+# metal.data <- metal.data[,c("MarkerName", "chr", "pos", "Allele1", "Allele2", names(metal.data)[startsWith(names(metal.data),"minor.allele")][1], "Freq1", "P-value", "Weight", "Zscore",  "Direction")]
+metal.data <- metal.data[,c("MarkerName", "chr", "pos", "Allele1", "Allele2", "Freq1", "P-value", "Weight", "Zscore",  "Direction")]
+names(metal.data) <- c("MarkerName", "chr", "pos","allele1", "allele2", "maf", "pvalue", "weight", "zscore","direction")
 fwrite(metal.data[which(metal.data[,"pvalue"] < pval.thresh),], file = paste0(out.pref,".METAL.top.assoc.csv"), sep=",")
 fwrite(metal.data, file = paste0(out.pref,".METAL.assoc.csv"), sep=",")
