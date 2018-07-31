@@ -14,5 +14,7 @@ RUN echo 'install.packages(c("qqman","data.table","tools","RColorBrewer"),repos=
 	Rscript --vanilla install.R && \
 	rm install.R
 	
-RUN git clone https://github.com/manning-lab/metal.git
+RUN git clone https://github.com/manning-lab/metal.git && \
+	echo hola
 
+RUN apt-get update & apt-get -y install dstat

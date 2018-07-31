@@ -28,6 +28,7 @@ task runMetal {
 		echo "PROCESS ${sep = '\nPROCESS ' assoc_files}" >> script.txt
 		echo "OUTFILE ${default='metal' out_pref} .tsv" >> script.txt
 		echo "ANALYZE ${default='' analyze_arg}" >> script.txt
+		dstat -c -d -m --nocolor 10 1>runMetal_out.log &
 		metal script.txt > "${out_pref}.log"
 	}
 
@@ -42,6 +43,7 @@ task runMetal {
 		File metal_script = "script.txt"
 		File log_file = "${out_pref}.log"
 		File info_file = "${out_pref}1.tsv.info"
+		File dstat_log = "runMetal_out.log"
 	}
 }
 
@@ -59,6 +61,7 @@ task metalSummary {
 	Int memory
 	
 	command {
+		dstat -c -d -m --nocolor 10 1>metalSummary_out.log &
 		R --vanilla --args ${default="MarkerName" marker_column} ${default="Score.pval" pval_column} ${default="n" sample_column} ${out_pref} ${metal_file} ${sep="," assoc_files} ${default="0.0001" pval_thresh} < /metal/metal_summary.R
 	}
 
@@ -72,6 +75,7 @@ task metalSummary {
 		File csv = "${out_pref}.METAL.assoc.csv"
 		File top_csv = "${out_pref}.METAL.top.assoc.csv"
 		File plots = "${out_pref}.plots.png"
+		File dstat_log = "metalSummary_out.log"
 	}
 }
 
