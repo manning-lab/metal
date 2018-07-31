@@ -120,9 +120,19 @@ manhattan(metal.data,chr="chr",bp="pos",p="P-value", main="All variants")
 
 dev.off()
 
+# make ref/alt cols if we can
+if(lengths(regmatches(metal.data$MarkerName[1], gregexpr("-", metal.data$MarkerName[1]))) == 3){
+  ref_alt <- do.call(rbind, strsplit(metal.data$MarkerName, "-"))
+  metal.data$ref <- ref_alt[,3]
+  metal.data$alt <- ref_alt[,4]
+  metal.data <- metal.data[,c("MarkerName", "chr", "pos", "ref", "alt", "Freq1", "P-value",  "Allele1", "Allele2", "Weight", "Zscore",  "Direction")]
+  names(metal.data) <- c("MarkerName", "chr", "pos", "ref", "alt", "maf", "pvalue", "allele1", "allele2", "weight", "zscore","direction")
+} else {
+  metal.data <- metal.data[,c("MarkerName", "chr", "pos", "Allele1", "Allele2", "Freq1", "P-value", "Weight", "Zscore",  "Direction")]
+  names(metal.data) <- c("MarkerName", "chr", "pos","allele1", "allele2", "maf", "pvalue", "weight", "zscore","direction")
+}
+
 # write results out to file
-# metal.data <- metal.data[,c("MarkerName", "chr", "pos", "Allele1", "Allele2", names(metal.data)[startsWith(names(metal.data),"minor.allele")][1], "Freq1", "P-value", "Weight", "Zscore",  "Direction")]
-metal.data <- metal.data[,c("MarkerName", "chr", "pos", "Allele1", "Allele2", "Freq1", "P-value", "Weight", "Zscore",  "Direction")]
-names(metal.data) <- c("MarkerName", "chr", "pos","allele1", "allele2", "maf", "pvalue", "weight", "zscore","direction")
 fwrite(metal.data[which(metal.data[,"pvalue"] < pval.thresh),], file = paste0(out.pref,".METAL.top.assoc.csv"), sep=",")
 fwrite(metal.data, file = paste0(out.pref,".METAL.assoc.csv"), sep=",")
+

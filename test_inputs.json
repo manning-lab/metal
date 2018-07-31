@@ -1,6 +1,6 @@
 {
-  "w_metal.these_assoc_files": ["test_inputs/demo.1.assoc.csv","test_inputs/demo.2.assoc.csv"],
+  "w_metal.these_assoc_files": ["test_inputs/demo_1000_genomes.cov1.assoc.csv","test_inputs/demo_1000_genomes.cov2.assoc.csv"],
   "w_metal.this_disk": 1,
   "w_metal.this_memory": 1,
-  "w_metal.this_out_pref": "demo"
+  "w_metal.this_out_pref": "demo_1000_genomes"
 }
