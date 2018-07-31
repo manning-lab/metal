@@ -95,15 +95,16 @@ workflow w_metal {
 	String? this_pval_thresh
 
 	# other inputs
-	Int this_memory
+	Int this_metal_memory
+	Int this_summary_memory
 	Int this_disk
 
 	call runMetal {
-		input: assoc_files = these_assoc_files, marker_column = this_marker_column, sample_column = this_sample_column, allele_effect_column = this_allele_effect_column, allele_non_effect_column = this_allele_non_effect_column, pval_column = this_pval_column, effect_column = this_effect_column, out_pref = this_out_pref, separator = this_separator, analyze_arg = this_analyze_arg, memory = this_memory, disk = this_disk
+		input: assoc_files = these_assoc_files, marker_column = this_marker_column, sample_column = this_sample_column, allele_effect_column = this_allele_effect_column, allele_non_effect_column = this_allele_non_effect_column, pval_column = this_pval_column, effect_column = this_effect_column, out_pref = this_out_pref, separator = this_separator, analyze_arg = this_analyze_arg, memory = this_metal_memory, disk = this_disk
 		
 	}
 
 	call metalSummary {
-		input: marker_column = this_marker_column, pval_column = this_pval_column, sample_column = this_sample_column, out_pref = this_out_pref, metal_file = runMetal.result_file, assoc_files = these_assoc_files, pval_thresh = this_pval_thresh, disk = this_disk, memory = this_memory
+		input: marker_column = this_marker_column, pval_column = this_pval_column, sample_column = this_sample_column, out_pref = this_out_pref, metal_file = runMetal.result_file, assoc_files = these_assoc_files, pval_thresh = this_pval_thresh, disk = this_disk, memory = this_summary_memory
 	}
 }
