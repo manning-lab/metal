@@ -13,7 +13,7 @@ task summaryCSVMetal {
 	runtime {
 		docker: "manninglab/metal:latest"
 		disks: "local-disk ${disk} SSD"
-		memory: "${memory}G"
+		memory: "${memory} GB"
 	}
 
 	output {
