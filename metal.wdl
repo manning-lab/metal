@@ -35,7 +35,7 @@ task runMetal {
 	runtime {
 		docker: "manninglab/metal:latest"
 		disks: "local-disk ${disk} SSD"
-		memory: "${memory}G"
+		memory: "${memory} GB"
 	}
 
 	output {
@@ -68,7 +68,7 @@ task metalSummary {
 	runtime {
 		docker: "manninglab/metal:latest"
 		disks: "local-disk ${disk} SSD"
-		memory: "${memory}G"
+		memory: "${memory} GB"
 	}
 
 	output {
