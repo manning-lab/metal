@@ -57,8 +57,13 @@ for (f in seq(1,length(assoc.files))){
 }
 
 # get the position and chromosome columns for manhatten
-metal.data$pos <- unlist(apply(metal.data[,names(metal.data)[startsWith(names(metal.data), "pos")]], 1, function(x) unique(x[!is.na(x)])[1]))
-metal.data$chr <- unlist(apply(metal.data[,names(metal.data)[startsWith(names(metal.data), "chr")]], 1, function(x) unique(x[!is.na(x)])[1]))
+if (length(assoc.files) > 1){
+  metal.data$pos <- unlist(apply(metal.data[,names(metal.data)[startsWith(names(metal.data), "pos")]], 1, function(x) unique(x[!is.na(x)])[1]))
+  metal.data$chr <- unlist(apply(metal.data[,names(metal.data)[startsWith(names(metal.data), "chr")]], 1, function(x) unique(x[!is.na(x)])[1]))
+} else {
+  metal.data$pos <- unlist(lapply(metal.data[,names(metal.data)[startsWith(names(metal.data), "pos")]], function(x) unique(x[!is.na(x)])[1]))
+  metal.data$chr <- unlist(lapply(metal.data[,names(metal.data)[startsWith(names(metal.data), "chr")]], function(x) unique(x[!is.na(x)])[1]))
+}
 
 # remove unneeded columns
 names.to.keep <- c(names.to.keep, "pos", "chr", names(metal.data)[startsWith(names(metal.data),pval.column)], names(metal.data)[startsWith(names(metal.data),"minor.allele")])
